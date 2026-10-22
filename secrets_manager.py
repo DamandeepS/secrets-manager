@@ -47,9 +47,12 @@ def color(text, code):
 EXCLUDE_DIR_NAMES = {
     "node_modules", ".git", ".svn", ".hg", "dist", "build", "out",
     ".next", ".nuxt", ".turbo", "vendor", "__pycache__", ".venv",
-    "venv", "env", ".idea", ".vscode", ".gradle", ".m2", ".pytest_cache",
-    ".mypy_cache", ".cargo", ".rustup", "Library", "Applications",
-    ".Trash", ".cache", "Caches", "AppData", "Local Settings"
+    "venv", "env", "myenv", ".idea", ".vscode", ".vscode-insiders",
+    ".gradle", ".m2", ".pytest_cache", ".mypy_cache", ".cargo",
+    ".rustup", ".pyenv", ".nvm", ".claude", "Library", "Applications",
+    ".Trash", ".cache", "Caches", "AppData", "Local Settings",
+    "site-packages", "dist-packages", "extensions", "third_party",
+    "google-cloud-sdk"
 }
 
 TEMPLATE_SUFFIXES = (
@@ -76,13 +79,16 @@ def normalize_to_home(path_str):
 
 def expand_from_home(path_str, base_dir=None):
     """Expands ~/path to absolute Path on the current operating system."""
+    if not path_str:
+        return Path.home() if not base_dir else Path(base_dir).resolve()
+
     if base_dir:
-        # If user provided a base directory override, rebase paths that start with ~/Documents, ~/Projects, etc.
-        clean = path_str.replace("~/", "", 1)
+        if path_str == "~":
+            return Path(base_dir).resolve()
+        clean = path_str[2:] if path_str.startswith("~/") else path_str.lstrip("/\\")
         return (Path(base_dir) / clean).resolve()
-    if path_str.startswith("~/") or path_str == "~":
-        return (Path.home() / path_str.replace("~/", "", 1)).resolve()
-    return Path(path_str).resolve()
+
+    return Path(os.path.expanduser(path_str)).resolve()
 
 
 def is_binary_file(file_path):
@@ -111,9 +117,9 @@ def classify_file(path_obj):
     if name == ".env" or name.startswith(".env."):
         return CATEGORY_DOTENV, True
 
-    # 2. SSH Keys & config
+    # 2. SSH Keys & config (ignore known_hosts / authorized_keys)
     if parent_name == ".ssh":
-        if name in ("config", "known_hosts", "authorized_keys"):
+        if name == "config":
             return CATEGORY_SSH, True
         if (name.startswith("id_") or name == "id") and not name.endswith(".pub"):
             return CATEGORY_SSH, True
