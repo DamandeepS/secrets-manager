@@ -20,11 +20,12 @@ A lightweight, zero-dependency, cross-platform CLI tool for backing up and resto
 ## 📂 File Structure
 
 ```text
-/Users/daman/Documents/secrets/
+secrets-manager/
 ├── secrets_manager.py   # Main cross-platform Python CLI tool
 ├── backup.sh            # Quick runner for backup
 ├── restore.sh           # Quick runner for restore
-├── master_secrets.md    # Generated vault file (after running backup)
+├── test_secrets_manager.py # Test suite
+├── master_secrets.md    # Generated vault file (local only, git-ignored)
 └── README.md            # Documentation
 ```
 
