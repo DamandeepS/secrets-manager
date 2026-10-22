@@ -1,0 +1,23 @@
+# Security: NEVER commit master secrets or vault files to version control
+master_secrets.md
+secrets_vault.md
+*.vault.md
+
+# Sensitive files and keys
+*.env
+*.env.*
+*.pem
+*.key
+*.pfx
+*.p12
+*.bak
+*.bak.*
+*recovery-codes*.txt
+
+# OS & Python artifacts
+.DS_Store
+__pycache__/
+*.pyc
+*.pyo
+*.tmp
+.pytest_cache/
